@@ -26,7 +26,7 @@
     /* O fundo preenche as laterais em monitores largos sem alterar a arte original. */
     body::before {
       content: ""; position: fixed; inset: -18px;
-      background: url("/convite.png") center / cover no-repeat;
+      background: url("./convite.png") center / cover no-repeat;
       filter: blur(16px) brightness(.38); transform: scale(1.04);
       z-index: 0; pointer-events: none;
     }
@@ -113,9 +113,15 @@
       font: 14px/1.65 Georgia, "Times New Roman", serif;
     }
     .envelope-stage {
+      appearance: none; -webkit-appearance: none; border: 0; padding: 0;
+      background: transparent; color: inherit; font: inherit;
       position: relative; width: min(78vw, 350px); height: 245px;
-      margin: 14px 0 5px; perspective: 1000px; filter: drop-shadow(0 18px 28px rgba(0,0,0,.32));
+      margin: 14px 0 5px; perspective: 1000px; cursor: pointer;
+      filter: drop-shadow(0 18px 28px rgba(0,0,0,.32));
+      -webkit-tap-highlight-color: transparent;
     }
+    .envelope-stage:focus-visible { outline: 2px solid #f4e5c2; outline-offset: 7px; border-radius: 8px; }
+    .envelope-stage:hover { filter: drop-shadow(0 20px 32px rgba(0,0,0,.42)) brightness(1.04); }
     .letter-paper {
       position: absolute; left: 13%; bottom: 12%; width: 74%; height: 77%;
       border: 1px solid rgba(139,100,44,.5);
@@ -195,9 +201,9 @@
 </head>
 <body>
   <main class="invite" aria-label="Convite de 15 anos da Driellen">
-    <img class="invite-art" src="/convite.png" alt="Convite de 15 anos da Driellen, sábado, 28 de novembro.">
+    <img class="invite-art" src="./convite.png" alt="Convite de 15 anos da Driellen, sábado, 28 de novembro.">
     <a class="location-link"
-       href="https://www.google.com/maps/search/?api=1&amp;query=R.%20C%C3%A9lso%20F%C3%A9lix%20Moreno%20Farsoni%2C%2012%20-%20Q.ta%20Bela%20Olinda%2C%20Bauru%20-%20SP%2C%2017023-750"
+       href="https://www.google.com/maps/search/?api=1&amp;query=R.%20C%C3%A9lso%20F%C3%A9lix%20Moreno%20Farsoni%2C%2012%20-%2009%20-%20Q.ta%20Bela%20Olinda%2C%20Bauru%20-%20SP"
        target="_blank" rel="noopener noreferrer"
        aria-label="Abrir o endereço da festa no Google Maps"
        title="Click e confira o local — abrir no Google Maps"></a>
@@ -214,7 +220,7 @@
       <p class="intro-eyebrow">Um convite feito com carinho</p>
       <h1 class="intro-title">Uma carta especial<br>para você</h1>
       <p class="intro-subtitle">Há momentos que merecem ser anunciados de uma forma inesquecível…</p>
-      <div class="envelope-stage" aria-hidden="true">
+      <button class="envelope-stage" id="open-envelope" type="button" aria-label="Clique para abrir a carta do convite">
         <div class="letter-paper">
           <div class="letter-rule"></div>
           <p class="letter-greeting">Com carinho,</p>
@@ -226,49 +232,41 @@
         <div class="envelope-front"></div>
         <div class="envelope-flap"></div>
         <div class="seal">✦</div>
-      </div>
-      <button class="skip-intro" id="skip-intro" type="button">Ver convite agora</button>
+      </button>
+      <button class="skip-intro" id="skip-intro" type="button">Abrir convite</button>
+      <p class="intro-subtitle" style="font-size:12px; margin-top:-5px">Clique no envelope ou no botão para abrir</p>
     </div>
   </section>
 
   <script>
     (() => {
       const intro = document.getElementById('intro');
-      const skipButton = document.getElementById('skip-intro');
-      let finished = false;
-      let closeTimer;
-      let hideTimer;
+      const openEnvelope = document.getElementById('open-envelope');
+      const openButton = document.getElementById('skip-intro');
+      let opened = false;
+      let finishTimer;
 
-      function finishIntro() {
-        if (finished) return;
-        finished = true;
-        clearTimeout(closeTimer);
-        clearTimeout(hideTimer);
-        intro.classList.add('is-leaving');
-        window.setTimeout(() => { intro.hidden = true; }, 800);
-      }
-
-      skipButton.addEventListener('click', finishIntro);
-
-      function beginIntro() {
-        if (finished) return;
+      function openInvite() {
+        // A carta só começa a abrir depois de uma ação explícita da pessoa.
+        if (opened) return;
+        opened = true;
+        openEnvelope.disabled = true;
+        openButton.disabled = true;
         intro.classList.add('is-opening');
+
         const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        closeTimer = window.setTimeout(() => {
-          if (finished) return;
+        const animationDuration = reducedMotion ? 150 : 2750;
+        finishTimer = window.setTimeout(() => {
           intro.classList.add('is-leaving');
-          hideTimer = window.setTimeout(() => {
+          window.setTimeout(() => {
             intro.hidden = true;
-            finished = true;
+            document.querySelector('.invite').setAttribute('aria-label', 'Convite de 15 anos da Driellen');
           }, reducedMotion ? 50 : 800);
-        }, reducedMotion ? 150 : 2750);
+        }, animationDuration);
       }
 
-      if (document.readyState === 'complete') {
-        window.setTimeout(beginIntro, 250);
-      } else {
-        window.addEventListener('load', () => window.setTimeout(beginIntro, 250), { once: true });
-      }
+      openEnvelope.addEventListener('click', openInvite);
+      openButton.addEventListener('click', openInvite);
     })();
   </script>
 </body>
