@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#300304">
+  <meta name="description" content="Convite de 15 anos da Driellen. Confira o local e confirme sua presença pelo WhatsApp.">
+  <title>15 Anos da Driellen — Convite</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --wine: #300304;
+      --wine-deep: #210103;
+      --gold: #d8b66b;
+      --paper: #ead9ad;
+      --paper-light: #f5e9c9;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; min-height: 100%; }
+    body {
+      min-height: 100svh; min-height: 100dvh;
+      display: grid; place-items: center; overflow: hidden;
+      background: var(--wine); font-family: Arial, Helvetica, sans-serif;
+      position: relative; isolation: isolate;
+    }
+    /* O fundo preenche as laterais em monitores largos sem alterar a arte original. */
+    body::before {
+      content: ""; position: fixed; inset: -18px;
+      background: url("/convite.png") center / cover no-repeat;
+      filter: blur(16px) brightness(.38); transform: scale(1.04);
+      z-index: 0; pointer-events: none;
+    }
+    body::after {
+      content: ""; position: fixed; inset: 0;
+      background: rgba(48, 3, 4, .42); z-index: 0; pointer-events: none;
+    }
+    .invite {
+      position: relative; z-index: 1; flex: none; overflow: hidden;
+      height: min(100dvh, calc(100vw * 1536 / 1021));
+      width: min(100vw, calc(100dvh * 1021 / 1536));
+      max-width: 100vw; aspect-ratio: 1021 / 1536;
+      background: var(--wine); box-shadow: 0 0 50px rgba(0,0,0,.28);
+    }
+    .invite-art { display: block; width: 100%; height: 100%; object-fit: contain; }
+    .rsvp, .location-link {
+      position: absolute; display: block; z-index: 2; border-radius: 12px;
+      text-decoration: none; -webkit-tap-highlight-color: transparent;
+      outline-offset: 3px;
+    }
+    /* Área clicável transparente sobre “Click e confira o local” na arte original. */
+    .location-link {
+      left: 27%; top: 68.9%; width: 46%; height: 5.8%;
+    }
+    .rsvp {
+      right: 2.5%; bottom: 3.1%; width: 39%; height: 8.8%;
+    }
+    .location-link:focus-visible, .rsvp:focus-visible { outline: 3px solid #fff; }
+    .location-link:hover, .rsvp:hover { background: rgba(255,255,255,.055); }
+    .hint {
+      position: fixed; left: 50%; bottom: max(10px, env(safe-area-inset-bottom));
+      transform: translateX(-50%); color: rgba(255,255,255,.78); font-size: 12px;
+      background: rgba(30,0,0,.72); border: 1px solid rgba(255,255,255,.2);
+      border-radius: 20px; padding: 7px 12px; white-space: nowrap;
+      opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 2;
+    }
+    @media (hover: none) { .hint { display: none; } }
+    @media (min-width: 700px) {
+      body { padding: 0; }
+      .invite {
+        height: 100dvh; width: min(100vw, calc(100dvh * 1021 / 1536));
+        max-width: 100vw; box-shadow: 0 0 64px rgba(0,0,0,.48);
+      }
+    }
+    @media (max-width: 699px) {
+      body::before { filter: blur(12px) brightness(.42); }
+      body::after { background: rgba(48, 3, 4, .24); }
+      .location-link { left: 25%; width: 50%; }
+    }
+
+    /* Intro: uma carta antiga se abrindo antes de revelar o convite. */
+    .intro {
+      position: fixed; inset: 0; z-index: 20; display: grid; place-items: center;
+      overflow: hidden; padding: max(20px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom));
+      background:
+        radial-gradient(ellipse at 50% 45%, rgba(107,38,25,.58), transparent 54%),
+        radial-gradient(ellipse at 50% 110%, rgba(8,0,0,.78), transparent 54%),
+        linear-gradient(135deg, #170102 0%, #4b0809 50%, #230203 100%);
+      opacity: 1; visibility: visible;
+      transition: opacity .75s ease, visibility .75s ease;
+    }
+    .intro::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .33;
+      background-image: radial-gradient(rgba(232,196,116,.65) .6px, transparent .8px);
+      background-size: 19px 19px;
+      mask-image: linear-gradient(120deg, transparent 12%, #000 48%, transparent 88%);
+    }
+    .intro.is-leaving { opacity: 0; visibility: hidden; pointer-events: none; }
+    .intro-content {
+      width: min(100%, 520px); display: flex; flex-direction: column;
+      align-items: center; text-align: center; position: relative; z-index: 1;
+      gap: 15px; color: #f4e7c8;
+    }
+    .intro-eyebrow {
+      margin: 0; color: #ddc17c; font: 12px/1.4 Arial, sans-serif;
+      letter-spacing: .24em; text-transform: uppercase;
+    }
+    .intro-title {
+      margin: 0; color: #f3e4bd; font: 400 clamp(28px, 6vw, 42px)/1.12 Georgia, "Times New Roman", serif;
+      text-shadow: 0 2px 20px rgba(0,0,0,.25);
+    }
+    .intro-subtitle {
+      margin: 0; max-width: 340px; color: rgba(246,230,195,.82);
+      font: 14px/1.65 Georgia, "Times New Roman", serif;
+    }
+    .envelope-stage {
+      position: relative; width: min(78vw, 350px); height: 245px;
+      margin: 14px 0 5px; perspective: 1000px; filter: drop-shadow(0 18px 28px rgba(0,0,0,.32));
+    }
+    .letter-paper {
+      position: absolute; left: 13%; bottom: 12%; width: 74%; height: 77%;
+      border: 1px solid rgba(139,100,44,.5);
+      background:
+        radial-gradient(ellipse at 20% 12%, rgba(255,255,255,.65), transparent 50%),
+        repeating-linear-gradient(0deg, rgba(122,79,30,.035) 0px, rgba(122,79,30,.035) 1px, transparent 1px, transparent 5px),
+        linear-gradient(130deg, var(--paper-light), var(--paper));
+      color: #6d2520; z-index: 2; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 9px; padding: 20px 12px;
+      transform: translateY(28%); opacity: .98;
+    }
+    .letter-paper::before {
+      content: ""; position: absolute; inset: 8px; border: 1px solid rgba(139,100,44,.4); pointer-events: none;
+    }
+    .letter-rule { width: 46px; height: 1px; background: #a37c43; }
+    .letter-greeting { margin: 0; font: italic 16px Georgia, "Times New Roman", serif; }
+    .letter-name { margin: 0; font: 30px/1 Georgia, "Times New Roman", serif; color: #761b19; }
+    .letter-caption { margin: 0; font: 10px/1.5 Arial, sans-serif; letter-spacing: .12em; text-transform: uppercase; }
+    .envelope-back {
+      position: absolute; inset: 22% 0 0; z-index: 1; overflow: hidden;
+      background: linear-gradient(145deg, #8b2822, #4d090d 70%);
+      border: 1px solid rgba(222,185,108,.82); border-radius: 3px 3px 8px 8px;
+    }
+    .envelope-back::before, .envelope-back::after {
+      content: ""; position: absolute; top: 0; height: 100%; width: 70%;
+      background: linear-gradient(145deg, rgba(198,122,73,.45), rgba(83,8,12,.72));
+    }
+    .envelope-back::before { left: -12%; clip-path: polygon(0 0, 100% 0, 50% 52%, 0 100%); }
+    .envelope-back::after { right: -12%; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 52%); }
+    .envelope-front {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 78%; z-index: 4;
+      background: linear-gradient(145deg, #8b2822, #4b080c 72%);
+      clip-path: polygon(0 0, 50% 55%, 100% 0, 100% 100%, 0 100%);
+      border-radius: 0 0 8px 8px;
+    }
+    .envelope-flap {
+      position: absolute; left: 0; right: 0; top: 22%; height: 48%; z-index: 5;
+      transform-origin: 50% 0; transform-style: preserve-3d;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      background: linear-gradient(160deg, #b24a37, #76201b 68%, #4b080c);
+      border-top: 1px solid rgba(222,185,108,.75);
+      backface-visibility: hidden;
+    }
+    .seal {
+      position: absolute; left: 50%; top: 54%; z-index: 6; width: 44px; height: 44px;
+      display: grid; place-items: center; transform: translate(-50%,-50%);
+      border-radius: 50%; color: #f0d08a; border: 1px solid #e2bd70;
+      background: radial-gradient(circle at 35% 30%, #9d332a, #4a090b 80%);
+      box-shadow: 0 2px 7px rgba(0,0,0,.32); font: 25px Georgia, serif;
+    }
+    .intro.is-opening .letter-paper { animation: letter-rise 1.65s cubic-bezier(.2,.75,.2,1) forwards; }
+    .intro.is-opening .envelope-flap { animation: flap-open 1s ease-in forwards; }
+    .intro.is-opening .seal { animation: seal-fade .4s ease forwards; animation-delay: .22s; }
+    .intro.is-opening .intro-title { animation: title-fade .8s ease both; }
+    .intro.is-opening .intro-subtitle { animation: title-fade .8s ease both; animation-delay: .12s; }
+    @keyframes flap-open { 0% { transform: rotateX(0deg); z-index: 5; } 99% { z-index: 1; } 100% { transform: rotateX(180deg); z-index: 1; } }
+    @keyframes letter-rise { 0% { transform: translateY(28%); } 55% { transform: translateY(-42%); } 100% { transform: translateY(-28%); } }
+    @keyframes seal-fade { to { opacity: 0; transform: translate(-50%,-50%) scale(.75); } }
+    @keyframes title-fade { from { opacity: .35; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+    .skip-intro {
+      appearance: none; border: 1px solid rgba(224,193,126,.65); border-radius: 999px;
+      padding: 11px 20px; margin-top: 3px; color: #f4e5c2;
+      background: rgba(38,1,3,.45); font: 12px Arial, sans-serif; letter-spacing: .08em;
+      cursor: pointer; transition: background .2s ease, transform .2s ease;
+    }
+    .skip-intro:hover { background: rgba(110,30,25,.45); transform: translateY(-1px); }
+    .skip-intro:focus-visible { outline: 2px solid #f4e5c2; outline-offset: 4px; }
+    @media (max-width: 420px) {
+      .envelope-stage { height: 215px; }
+      .intro-content { gap: 12px; }
+      .intro-subtitle { font-size: 13px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="invite" aria-label="Convite de 15 anos da Driellen">
+    <img class="invite-art" src="/convite.png" alt="Convite de 15 anos da Driellen, sábado, 28 de novembro.">
+    <a class="location-link"
+       href="https://www.google.com/maps/search/?api=1&amp;query=R.%20C%C3%A9lso%20F%C3%A9lix%20Moreno%20Farsoni%2C%2012%20-%20Q.ta%20Bela%20Olinda%2C%20Bauru%20-%20SP%2C%2017023-750"
+       target="_blank" rel="noopener noreferrer"
+       aria-label="Abrir o endereço da festa no Google Maps"
+       title="Click e confira o local — abrir no Google Maps"></a>
+    <a class="rsvp"
+       href="https://wa.me/5514991440905?text=Eu%20confirmo%20a%20minha%20presen%C3%A7a%20para%20o%20seu%20anivers%C3%A1rio%21%21%21"
+       target="_blank" rel="noopener noreferrer"
+       aria-label="Confirmar presença pelo WhatsApp"
+       title="Confirmar presença pelo WhatsApp"></a>
+  </main>
+  <div class="hint">Clique em “Click e confira o local” para abrir o Google Maps</div>
+
+  <section class="intro" id="intro" aria-label="Introdução animada do convite">
+    <div class="intro-content">
+      <p class="intro-eyebrow">Um convite feito com carinho</p>
+      <h1 class="intro-title">Uma carta especial<br>para você</h1>
+      <p class="intro-subtitle">Há momentos que merecem ser anunciados de uma forma inesquecível…</p>
+      <div class="envelope-stage" aria-hidden="true">
+        <div class="letter-paper">
+          <div class="letter-rule"></div>
+          <p class="letter-greeting">Com carinho,</p>
+          <p class="letter-name">Driellen</p>
+          <p class="letter-caption">15 anos · um dia especial</p>
+          <div class="letter-rule"></div>
+        </div>
+        <div class="envelope-back"></div>
+        <div class="envelope-front"></div>
+        <div class="envelope-flap"></div>
+        <div class="seal">✦</div>
+      </div>
+      <button class="skip-intro" id="skip-intro" type="button">Ver convite agora</button>
+    </div>
+  </section>
+
+  <script>
+    (() => {
+      const intro = document.getElementById('intro');
+      const skipButton = document.getElementById('skip-intro');
+      let finished = false;
+      let closeTimer;
+      let hideTimer;
+
+      function finishIntro() {
+        if (finished) return;
+        finished = true;
+        clearTimeout(closeTimer);
+        clearTimeout(hideTimer);
+        intro.classList.add('is-leaving');
+        window.setTimeout(() => { intro.hidden = true; }, 800);
+      }
+
+      skipButton.addEventListener('click', finishIntro);
+
+      function beginIntro() {
+        if (finished) return;
+        intro.classList.add('is-opening');
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        closeTimer = window.setTimeout(() => {
+          if (finished) return;
+          intro.classList.add('is-leaving');
+          hideTimer = window.setTimeout(() => {
+            intro.hidden = true;
+            finished = true;
+          }, reducedMotion ? 50 : 800);
+        }, reducedMotion ? 150 : 2750);
+      }
+
+      if (document.readyState === 'complete') {
+        window.setTimeout(beginIntro, 250);
+      } else {
+        window.addEventListener('load', () => window.setTimeout(beginIntro, 250), { once: true });
+      }
+    })();
+  </script>
+</body>
+</html>

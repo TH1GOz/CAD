@@ -1,0 +1,22 @@
+SITE DO CONVITE — DRIELLEN
+
+Arquivos:
+- index.html: página responsiva do convite.
+- convite.png: imagem original do convite, mantida sem alterações.
+
+O que foi ajustado:
+- Em computadores, o convite usa toda a altura da tela e o fundo largo é preenchido com o próprio visual do convite, suavizado e escurecido para manter a arte principal legível.
+- Em celulares, o convite continua adaptado à tela.
+- A confirmação abre o WhatsApp para +55 14 99144-0905 com a mensagem: Eu confirmo a minha presença para o seu aniversário!!!
+
+Como testar localmente:
+1. Extraia o ZIP.
+2. Abra um terminal nesta pasta.
+3. Execute: npx serve .
+4. Abra o endereço local exibido no terminal.
+
+Como publicar na Vercel:
+1. Envie index.html e convite.png para a raiz de um repositório no GitHub.
+2. Importe o repositório na Vercel.
+3. Não é necessário configurar build command nem variáveis de ambiente para este site estático.
+4. Clique em Deploy.
